@@ -87,6 +87,9 @@ requirements (OWASP, GDPR, DORA, MiCA).
 | **DORA** | {{DORA_APPLICABLE}} | {{DORA_SCOPE}} |
 | **MiCA** | {{MICA_APPLICABLE}} | {{MICA_SCOPE}} |
 | **PCI-DSS** | {{PCI_APPLICABLE}} | {{PCI_SCOPE}} |
+| **ISO 20022** | {{ISO20022_APPLICABLE}} | {{ISO20022_SCOPE}} |
+| **SEPA** | {{SEPA_APPLICABLE}} | {{SEPA_SCOPE}} |
+| **eIDAS** | {{EIDAS_APPLICABLE}} | {{EIDAS_SCOPE}} |
 | **OWASP Top 10** | Always | All code changes |
 
 ---
@@ -149,9 +152,12 @@ Agent definitions: `.agents/agents/`
 | `mica` | Markets in Crypto-Assets Regulation | Project handles crypto-assets |
 | `psd2` | Payment Services Directive 2 | Project provides payment/account services |
 | `pci-dss` | Payment Card Industry Data Security Standard | Project processes cardholder data |
+| `iso-20022` | Financial Messaging Standard | Project exchanges payment messages (pain, pacs, camt) |
+| `sepa` | Single Euro Payments Area | Project processes euro payments within EU/EEA |
+| `eidas` | Electronic Identification and Trust Services | Project uses electronic identity, digital signatures, or KYC |
 | `compliance-eu` | Dispatcher/meta-skill | Backward compatibility or all frameworks apply |
 
-**Installation rule:** Only copy the compliance skills that match `{{COMPLIANCE_FRAMEWORKS}}`.
+**Installation rule:** Only copy the compliance and banking skills that match `{{COMPLIANCE_FRAMEWORKS}}`.
 Do not install MiCA for a non-crypto project. Do not install PCI-DSS for tokenized payment flows.
 
 Skill definitions: `.agents/skills/`
