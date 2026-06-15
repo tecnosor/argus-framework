@@ -97,22 +97,48 @@ Each skill is a specialized instruction set for a specific compliance domain:
    - **Phase 2:** Install agents, skills, documentation, and configuration files
    - **Phase 3:** Verify the installation (check for placeholders, validate configs)
 
-### For Humans
+### For Humans (Copy-Paste This Prompt)
 
-If you are a human developer setting up Argus:
+You don't need to install anything yourself. Just copy and paste this prompt into your AI agent:
+
+```text
+I want to install the Argus framework in this workspace.
+
+Please do the following:
+
+1. Read this README.md file fully to understand what Argus is.
+2. Read AGENTIC-INSTALLATION.md carefully — it is the master self-installation script.
+3. Follow AGENTIC-INSTALLATION.md step by step:
+   - Phase 0: Analyze this workspace silently and create a detection summary
+   - Phase 1: Ask me the configuration questions listed in the guide
+   - Phase 2: Install the 5 agents, 12 skills, documentation, and AGENTS.md
+   - Phase 3: Verify everything (check no {{PLACEHOLDER}} markers remain)
+4. Create checkpoint files in .argus-installation/ after each phase.
+5. Do not skip any steps.
+6. If you get stuck or lose context, re-read the latest checkpoint file and the current phase.
+
+The framework files are in this repository:
+- .agents/agents/ — agent definitions
+- .agents/skills/ — skill definitions
+- .agents/rules/AGENTS-TEMPLATE.md — template for AGENTS.md
+- .agents/docs/ — documentation templates
+
+Install Argus now.
+```
+
+#### One-Command Setup (Optional)
+
+If you prefer, you can also clone Argus into your project manually and then ask the agent to install it:
 
 ```bash
-# Clone the framework
-git clone https://github.com/your-org/argus.git
+# Option A: Clone Argus as a reference in your workspace
+git clone https://github.com/tecnosor/argus-framework.git argus
 
-# Or copy into your project
-# The .agents/ directory contains everything
-cp -r argus/.agents/ your-project/
+# Option B: Copy the framework files into your project
+cp -r argus/.agents/ ./.agents/
+cp -r argus/AGENTIC-INSTALLATION.md ./AGENTIC-INSTALLATION.md
 
-# Then run the installation
-cd your-project
-# Open the AGENTIC-INSTALLATION.md in your AI agent
-# and say: "Install Argus in this workspace"
+# Then open AGENTIC-INSTALLATION.md in your agent and paste the prompt above.
 ```
 
 ### What Gets Installed
@@ -278,3 +304,6 @@ See [LICENSE](LICENSE) for the full text.
 ---
 
 > *"Five eyes. Seven phases. Zero compliance violations."*
+
+
+Alfonso Soria Muñoz. Tecnosor 2026
