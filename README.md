@@ -1,5 +1,21 @@
 # Argus
 
+[![GitHub stars](https://img.shields.io/github/stars/tecnosor/argus-framework?style=social)](https://github.com/tecnosor/argus-framework/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/tecnosor/argus-framework?style=social)](https://github.com/tecnosor/argus-framework/network/members)
+[![GitHub watchers](https://img.shields.io/github/watchers/tecnosor/argus-framework?style=social)](https://github.com/tecnosor/argus-framework/watchers)
+[![GitHub license](https://img.shields.io/github/license/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework/blob/main/LICENSE)
+[![GitHub last commit](https://img.shields.io/github/last-commit/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework/commits/main)
+[![GitHub issues](https://img.shields.io/github/issues/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework/issues)
+[![GitHub pull requests](https://img.shields.io/github/issues-pr/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework/pulls)
+[![GitHub contributors](https://img.shields.io/github/contributors/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework/graphs/contributors)
+[![GitHub repo size](https://img.shields.io/github/repo-size/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework)
+[![GitHub top language](https://img.shields.io/github/languages/top/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework)
+[![GitHub release](https://img.shields.io/github/v/release/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework/releases)
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/tecnosor/argus-framework)](https://github.com/tecnosor/argus-framework/commits/main)
+[![Maintenance](https://img.shields.io/maintenance/yes/2026)](https://github.com/tecnosor/argus-framework)
+[![Platform](https://img.shields.io/badge/platform-OpenCode%20%7C%20Cursor%20%7C%20Windsurf%20%7C%20Cline%20%7C%20Aider-blue)](https://github.com/tecnosor/argus-framework)
+[![Compliance](https://img.shields.io/badge/compliance-GDPR%20%7C%20DORA%20%7C%20MiCA%20%7C%20PSD2%20%7C%20PCI--DSS%20%7C%20ISO%2020022%20%7C%20SEPA%20%7C%20eIDAS-orange)](https://github.com/tecnosor/argus-framework)
+
 > **Your 5-Eye Compliance Framework for Banking-Grade Software Development**
 
 Argus is an agent-agnostic AI framework that installs a complete **banking compliance SDLC** into any codebase. Named after Argus Panoptes — the all-seeing giant of Greek mythology — it deploys 5 specialized agents (5 eyes) to watch every aspect of your software lifecycle: security, compliance, quality, testing, and delivery.
