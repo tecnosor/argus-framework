@@ -279,6 +279,9 @@ Always load these skills when available:
 - `mica` — if project handles crypto-assets
 - `psd2` — if project provides payment services
 - `pci-dss` — if project processes cardholder data
+- `iso-20022` — if project exchanges payment messages
+- `sepa` — if project processes euro payments
+- `eidas` — if project uses electronic identity or digital signatures
 - `compliance-eu` — only as backward-compatible dispatcher if all frameworks apply
 
 Always load these skills when available:

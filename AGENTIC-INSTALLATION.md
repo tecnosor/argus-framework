@@ -677,6 +677,18 @@ if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "PCI"; then
   COMPLIANCE_SKILLS+=("pci-dss")
 fi
 
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "ISO 20022"; then
+  COMPLIANCE_SKILLS+=("iso-20022")
+fi
+
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "SEPA"; then
+  COMPLIANCE_SKILLS+=("sepa")
+fi
+
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "eIDAS"; then
+  COMPLIANCE_SKILLS+=("eidas")
+fi
+
 # Optional: copy compliance-eu dispatcher if all frameworks apply or for backward compatibility
 # COMPLIANCE_SKILLS+=("compliance-eu")
 
@@ -699,7 +711,10 @@ done
    - MiCA → .agents/skills/mica/
    - PSD2 → .agents/skills/psd2/
    - PCI-DSS → .agents/skills/pci-dss/
-4. Skip compliance skills that do not apply
+   - ISO 20022 → .agents/skills/iso-20022/
+   - SEPA → .agents/skills/sepa/
+   - eIDAS → .agents/skills/eidas/
+4. Skip compliance and banking skills that do not apply
 5. Replace all placeholders in all copied skills
 ```
 
@@ -918,7 +933,7 @@ echo "Phase 3 completed. Verification done." > .argus-installation/phase-3-check
 - **5 Agents**: Orchestrator, Backend Dev, Frontend Dev, Reviewer, Testing
 - **11 Core Skills**: build-check, code-review, git-flow, history-scan, jira-integration,
   lang-enforcer, owasp-top10, project-status, secure-coder, test-driven, ui-ux
-- **5 Compliance Skills** (selected based on project scope): gdpr, dora, mica, psd2, pci-dss
+- **8 Compliance & Banking Skills** (selected based on project scope): gdpr, dora, mica, psd2, pci-dss, iso-20022, sepa, eidas
 - **6 Documentation Files**: architecture, coding-standards, security-policy, database-schema,
   ui-ux-guidelines, api-standards
 - **1 Rules File**: AGENTS.md at project root

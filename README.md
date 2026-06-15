@@ -84,7 +84,7 @@ Each skill is a specialized instruction set for a specific SDLC domain:
 | `test-driven` | Quality | TDD, AAA pattern, test coverage |
 | `ui-ux` | Design | Design system, accessibility, responsive |
 
-### 5 Compliance Skills (Install Only What Applies)
+### 8 Compliance & Banking Skills (Install Only What Applies)
 
 | Skill | Regulation | Install If |
 |-------|------------|------------|
@@ -93,8 +93,11 @@ Each skill is a specialized instruction set for a specific SDLC domain:
 | `mica` | Markets in Crypto-Assets Regulation | You handle crypto-assets |
 | `psd2` | Payment Services Directive 2 | You provide payment services |
 | `pci-dss` | Payment Card Industry Data Security Standard | You process cardholder data |
+| `iso-20022` | Financial Messaging Standard | You exchange payment messages (pain, pacs, camt) |
+| `sepa` | Single Euro Payments Area | You process euro payments within EU/EEA |
+| `eidas` | Electronic Identification and Trust Services | You use electronic identity, digital signatures, or KYC |
 
-The old `compliance-eu` skill is now a dispatcher for backward compatibility. New installations should copy only the compliance skills that apply to the project.
+The old `compliance-eu` skill is now a dispatcher for backward compatibility. New installations should copy only the skills that apply to the project.
 
 ---
 
