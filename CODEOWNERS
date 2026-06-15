@@ -1,0 +1,10 @@
+# Global code owner — all changes require approval by the repository owner
+* @tecnosor
+
+# Governance and security files require explicit owner approval
+/CODEOWNERS @tecnosor
+/CONTRIBUTING.md @tecnosor
+/CODE_OF_CONDUCT.md @tecnosor
+/SECURITY.md @tecnosor
+/LICENSE @tecnosor
+/.github/ @tecnosor

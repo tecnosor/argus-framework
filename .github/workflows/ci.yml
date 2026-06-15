@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate repository structure
+        run: |
+          echo "Checking required governance files..."
+          test -f CODEOWNERS || { echo "Missing CODEOWNERS"; exit 1; }
+          test -f CONTRIBUTING.md || { echo "Missing CONTRIBUTING.md"; exit 1; }
+          test -f CODE_OF_CONDUCT.md || { echo "Missing CODE_OF_CONDUCT.md"; exit 1; }
+          test -f SECURITY.md || { echo "Missing SECURITY.md"; exit 1; }
+          test -f LICENSE || { echo "Missing LICENSE"; exit 1; }
+          echo "All required governance files present."
+
+      - name: Check CODEOWNERS references valid users
+        run: |
+          grep -E '^\*\s+@tecnosor$' CODEOWNERS || { echo "CODEOWNERS must reference @tecnosor as global owner"; exit 1; }
+          echo "CODEOWNERS is valid."
+
+      - name: Markdown lint (basic)
+        run: |
+          # Check for broken markdown links (simple regex)
+          find . -name '*.md' -type f ! -path './.git/*' -exec grep -l '\[.*\](.*)' {} \; | while read file; do
+            grep -oE '\[([^\]]+)\]\(([^)]+)\)' "$file" | while read link; do
+              url=$(echo "$link" | grep -oE '\(([^)]+)\)' | tr -d '()')
+              if [[ "$url" =~ ^#.*$ ]]; then
+                # Skip anchor-only links
+                continue
+              fi
+              if [[ "$url" =~ ^https?://.*$ ]]; then
+                # Skip external links in basic check
+                continue
+              fi
+              if [[ "$url" =~ ^mailto:.*$ ]]; then
+                continue
+              fi
+              # Check relative links
+              if [[ "$url" != /* ]]; then
+                dir=$(dirname "$file")
+                target="$dir/$url"
+                if [ ! -e "$target" ]; then
+                  echo "Broken link in $file: $url"
+                  exit 1
+                fi
+              fi
+            done
+          done
+          echo "No broken relative links found."
+
+  lint-commits:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check conventional commit format
+        run: |
+          # Check that all commits in the PR follow conventional commits
+          git log --format=%s "origin/${{ github.base_ref }}..HEAD" | while read msg; do
+            if ! echo "$msg" | grep -qE '^(feat|fix|chore|docs|style|refactor|perf|test|build|ci|revert)(\(.+\))?: .+'; then
+              echo "Commit message does not follow conventional commits: $msg"
+              exit 1
+            fi
+          done
+          echo "All commit messages follow conventional commits format."
