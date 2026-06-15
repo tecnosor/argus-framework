@@ -304,3 +304,6 @@ See [LICENSE](LICENSE) for the full text.
 ---
 
 > *"Five eyes. Seven phases. Zero compliance violations."*
+
+
+Alfonso Soria Muñoz. Tecnosor 2026

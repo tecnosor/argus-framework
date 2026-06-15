@@ -1,14 +1,16 @@
-# Standard GitHub templates and configurations
-.github/
+# macOS system files
+.DS_Store
+.AppleDouble
+.LSOverride
 
 # Editor configs
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
 # OS files
-.DS_Store
 Thumbs.db
 
 # Logs
@@ -17,3 +19,6 @@ Thumbs.db
 # Temporary files
 *.tmp
 *.temp
+
+# Reference docs (internal only)
+standard-docs/
