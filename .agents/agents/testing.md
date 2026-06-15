@@ -306,4 +306,10 @@ Always load these skills when available:
 - `build-check` — verify build and test pipeline
 - `secure-coder` — security testing checklist
 - `owasp-top10` — security vulnerability testing
-- `compliance-eu` — compliance testing requirements
+
+**Load compliance skills based on project scope (`{{COMPLIANCE_FRAMEWORKS}}`):**
+- `gdpr` — if project processes EU personal data
+- `dora` — if project is a financial entity or ICT provider
+- `mica` — if project handles crypto-assets
+- `psd2` — if project provides payment services
+- `pci-dss` — if project processes cardholder data

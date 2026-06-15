@@ -151,10 +151,13 @@ After testing passes, invoke `@reviewer` with:
 - Compliance frameworks to check: `{{COMPLIANCE_FRAMEWORKS}}`
 - Full review checklist:
   - [ ] OWASP Top 10
-  - [ ] GDPR compliance
-  - [ ] EU regulatory compliance (DORA, MiCA as applicable)
-  - [ ] Coding standards (backend + frontend + DB)
-  - [ ] Test coverage meets minimum: `{{MIN_COVERAGE}}`
+- [ ] GDPR compliance (load `gdpr` skill if applicable)
+- [ ] DORA compliance (load `dora` skill if applicable)
+- [ ] MiCA compliance (load `mica` skill if applicable)
+- [ ] PSD2 compliance (load `psd2` skill if applicable)
+- [ ] PCI-DSS compliance (load `pci-dss` skill if applicable)
+- [ ] Coding standards (backend + frontend + DB)
+- [ ] Test coverage meets minimum: `{{MIN_COVERAGE}}`
   - [ ] Git hygiene (branch naming, commit messages)
   - [ ] Naming conventions
   - [ ] Build integrity
@@ -279,5 +282,12 @@ Always load these skills when available:
 - `git-flow` — for branch management
 - `project-status` — for board/status visibility
 - `jira-integration` — for issue tracker operations
-- `compliance-eu` — for compliance scope assessment
 - `secure-coder` — for security scope assessment
+
+**Load compliance skills based on project scope (`{{COMPLIANCE_FRAMEWORKS}}`):**
+- `gdpr` — if project processes EU personal data
+- `dora` — if project is a financial entity or ICT provider
+- `mica` — if project handles crypto-assets
+- `psd2` — if project provides payment services
+- `pci-dss` — if project processes cardholder data
+- `compliance-eu` — only as backward-compatible dispatcher if all frameworks apply
