@@ -273,7 +273,15 @@ Maintain state in `.agents/memory/.reviewer/[session-id]/memoria.md`:
 
 Always load these skills when available:
 - `owasp-top10` — OWASP Top 10 vulnerability checklist
-- `compliance-eu` — GDPR, DORA, MiCA compliance rules
+**Load compliance skills based on project scope (`{{COMPLIANCE_FRAMEWORKS}}`):**
+- `gdpr` — if project processes EU personal data
+- `dora` — if project is a financial entity or ICT provider
+- `mica` — if project handles crypto-assets
+- `psd2` — if project provides payment services
+- `pci-dss` — if project processes cardholder data
+- `compliance-eu` — only as backward-compatible dispatcher if all frameworks apply
+
+Always load these skills when available:
 - `secure-coder` — Security coding standards
 - `code-review` — Structured review methodology
 - `test-driven` — Test quality assessment criteria

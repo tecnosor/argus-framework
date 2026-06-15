@@ -620,14 +620,15 @@ grep -r "{{" .agents/agents/ --include="*.md"
 
 ### Step 2.4: Copy Skill Definitions
 
-**For each skill, copy the SKILL.md and replace placeholders.**
+**Copy core skills first. Then copy only the compliance skills that apply to the project.**
+
+#### Step 2.4.1: Copy Core Skills (Always Required)
 
 ```bash
-# List of skills to copy
-SKILLS=(
+# List of core skills to copy
+CORE_SKILLS=(
   "build-check"
   "code-review"
-  "compliance-eu"
   "git-flow"
   "history-scan"
   "jira-integration"
@@ -639,9 +640,49 @@ SKILLS=(
   "ui-ux"
 )
 
-# Copy each skill
-for skill in "${SKILLS[@]}"; do
-  echo "Copying skill: $skill"
+# Copy each core skill
+for skill in "${CORE_SKILLS[@]}"; do
+  echo "Copying core skill: $skill"
+  mkdir -p ".agents/skills/$skill"
+  # cp /path/to/argus/.agents/skills/$skill/SKILL.md .agents/skills/$skill/SKILL.md
+done
+```
+
+#### Step 2.4.2: Copy Compliance Skills (Conditional)
+
+Read `{{COMPLIANCE_FRAMEWORKS}}` from the user answers. Copy only the skills that apply:
+
+```bash
+# Determine applicable compliance skills
+COMPLIANCE_SKILLS=()
+
+# Check each framework from {{COMPLIANCE_FRAMEWORKS}}
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "GDPR"; then
+  COMPLIANCE_SKILLS+=("gdpr")
+fi
+
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "DORA"; then
+  COMPLIANCE_SKILLS+=("dora")
+fi
+
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "MiCA"; then
+  COMPLIANCE_SKILLS+=("mica")
+fi
+
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "PSD2"; then
+  COMPLIANCE_SKILLS+=("psd2")
+fi
+
+if echo "{{COMPLIANCE_FRAMEWORKS}}" | grep -qi "PCI"; then
+  COMPLIANCE_SKILLS+=("pci-dss")
+fi
+
+# Optional: copy compliance-eu dispatcher if all frameworks apply or for backward compatibility
+# COMPLIANCE_SKILLS+=("compliance-eu")
+
+# Copy selected compliance skills
+for skill in "${COMPLIANCE_SKILLS[@]}"; do
+  echo "Copying compliance skill: $skill"
   mkdir -p ".agents/skills/$skill"
   # cp /path/to/argus/.agents/skills/$skill/SKILL.md .agents/skills/$skill/SKILL.md
 done
@@ -650,15 +691,24 @@ done
 **For AI agents using text tools:**
 
 ```
-1. Create the directory: .agents/skills/build-check/
-2. Read the template: .agents/skills/build-check/SKILL.md (from Argus source)
-3. Replace all placeholders
-4. Write the file to .agents/skills/build-check/SKILL.md
-5. Repeat for ALL 12 skills
+1. Copy all 11 core skills to .agents/skills/
+2. Read {{COMPLIANCE_FRAMEWORKS}} from user answers
+3. For each applicable framework, copy the matching skill:
+   - GDPR → .agents/skills/gdpr/
+   - DORA → .agents/skills/dora/
+   - MiCA → .agents/skills/mica/
+   - PSD2 → .agents/skills/psd2/
+   - PCI-DSS → .agents/skills/pci-dss/
+4. Skip compliance skills that do not apply
+5. Replace all placeholders in all copied skills
 ```
 
 **Verification command:**
 ```bash
+# Count skills
+echo "Core skills: $(ls .agents/skills/ | wc -l)"
+
+# Check for placeholders
 grep -r "{{" .agents/skills/ --include="*.md"
 # This should return NOTHING
 ```
@@ -837,7 +887,8 @@ cat << 'EOF'
 | Check | Status |
 |-------|--------|
 | Agent files (5) | ✅/❌ |
-| Skill files (12) | ✅/❌ |
+| Core skill files (11) | ✅/❌ |
+| Compliance skill files (selected) | ✅/❌ |
 | No placeholders | ✅/❌ |
 | AGENTS.md exists | ✅/❌ |
 | Documentation (6) | ✅/❌ |
@@ -865,8 +916,9 @@ echo "Phase 3 completed. Verification done." > .argus-installation/phase-3-check
 
 ### Installed Components
 - **5 Agents**: Orchestrator, Backend Dev, Frontend Dev, Reviewer, Testing
-- **12 Skills**: build-check, code-review, compliance-eu, owasp-top10, git-flow,
-  history-scan, jira-integration, lang-enforcer, ui-ux, project-status, secure-coder, test-driven
+- **11 Core Skills**: build-check, code-review, git-flow, history-scan, jira-integration,
+  lang-enforcer, owasp-top10, project-status, secure-coder, test-driven, ui-ux
+- **5 Compliance Skills** (selected based on project scope): gdpr, dora, mica, psd2, pci-dss
 - **6 Documentation Files**: architecture, coding-standards, security-policy, database-schema,
   ui-ux-guidelines, api-standards
 - **1 Rules File**: AGENTS.md at project root

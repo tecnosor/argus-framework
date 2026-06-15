@@ -124,20 +124,35 @@ Agent definitions: `.agents/agents/`
 
 ## Skills
 
+### Core Skills (Always Installed)
+
 | Skill | Purpose |
 |-------|---------|
 | `build-check` | Build pipeline validation |
 | `code-review` | Structured code review |
-| `compliance-eu` | GDPR, DORA, MiCA compliance |
-| `owasp-top10` | OWASP Top 10 security checks |
 | `git-flow` | Git workflow enforcement |
 | `history-scan` | Git history analysis |
-| `jira-integration` | Jira issue management |
+| `jira-integration` | Jira issue management with parameterized templates |
 | `lang-enforcer` | English language enforcement |
-| `ui-ux` | UI/UX design standards |
+| `owasp-top10` | OWASP Top 10 security checks |
 | `project-status` | Project status reporting |
 | `secure-coder` | OWASP secure coding |
 | `test-driven` | TDD enforcement |
+| `ui-ux` | UI/UX design standards |
+
+### Compliance Skills (Install Only What Applies)
+
+| Skill | Regulation | Install If |
+|-------|------------|------------|
+| `gdpr` | General Data Protection Regulation | Project processes EU personal data |
+| `dora` | Digital Operational Resilience Act | Project is a financial entity or ICT provider |
+| `mica` | Markets in Crypto-Assets Regulation | Project handles crypto-assets |
+| `psd2` | Payment Services Directive 2 | Project provides payment/account services |
+| `pci-dss` | Payment Card Industry Data Security Standard | Project processes cardholder data |
+| `compliance-eu` | Dispatcher/meta-skill | Backward compatibility or all frameworks apply |
+
+**Installation rule:** Only copy the compliance skills that match `{{COMPLIANCE_FRAMEWORKS}}`.
+Do not install MiCA for a non-crypto project. Do not install PCI-DSS for tokenized payment flows.
 
 Skill definitions: `.agents/skills/`
 

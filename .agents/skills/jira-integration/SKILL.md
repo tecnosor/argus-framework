@@ -62,7 +62,33 @@ AUTH_HEADER="Authorization: Basic $(echo -n ${JIRA_EMAIL}:${JIRA_API_TOKEN} | ba
 
 ## Issue Types and Templates
 
-### Epic
+> **All templates below use placeholders from the Argus installation questionnaire.**
+> Replace every `{{PLACEHOLDER}}` with the actual project value before creating issues.
+> Templates marked with `[CONDITIONAL]` should only be used when the relevant scope applies.
+
+### Parameterized Epic
+
+```json
+{
+  "fields": {
+    "project": { "key": "{{PROJECT_KEY}}" },
+    "summary": "[EPIC] {{FEATURE_AREA}} — {{PROJECT_NAME}}",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [{
+        "type": "paragraph",
+        "content": [{ "type": "text", "text": "## Goal\nEnable {{FEATURE_AREA}} for {{PROJECT_DESCRIPTION}}.\n\n## Scope\n- Backend: {{BACKEND_LANG}}/{{BACKEND_FRAMEWORK}}\n- Frontend: {{FRONTEND_LANG}}/{{FRONTEND_FRAMEWORK}}\n- Database: {{DATABASE}}\n- Architecture: {{ARCHITECTURE}}\n\n## Compliance\nApplicable frameworks: {{COMPLIANCE_FRAMEWORKS}}\n\n## Success Criteria\n- [ ] All user stories completed\n- [ ] All tests passing (coverage >= {{MIN_COVERAGE}})\n- [ ] Security review passed (OWASP Top 10)\n- [ ] Compliance review passed" }]
+      }]
+    },
+    "issuetype": { "name": "Epic" },
+    "priority": { "name": "High" },
+    "labels": ["epic", "compliance", "{{FEATURE_AREA_SLUG}}"]
+  }
+}
+```
+
+### Epic (Minimal)
 
 ```json
 {
@@ -84,7 +110,30 @@ AUTH_HEADER="Authorization: Basic $(echo -n ${JIRA_EMAIL}:${JIRA_API_TOKEN} | ba
 }
 ```
 
-### User Story
+### Parameterized User Story
+
+```json
+{
+  "fields": {
+    "project": { "key": "{{PROJECT_KEY}}" },
+    "summary": "As a {{USER_ROLE}}, I want {{GOAL}}, so that {{BENEFIT}}",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [{
+        "type": "paragraph",
+        "content": [{ "type": "text", "text": "## Context\nPart of epic {{EPIC_KEY}} for {{PROJECT_NAME}}.\n\n## Acceptance Criteria\n\n```gherkin\nGiven {{PRECONDITION}}\nWhen {{ACTION}}\nThen {{EXPECTED_RESULT}}\n```\n\n## Technical Notes\n- Backend: {{BACKEND_LANG}}/{{BACKEND_FRAMEWORK}}\n- Frontend: {{FRONTEND_LANG}}/{{FRONTEND_FRAMEWORK}} if applicable\n- Affected modules: {{AFFECTED_MODULES}}\n\n## Compliance Scope\n{{COMPLIANCE_FRAMEWORKS}}\n\n## Security Considerations\n{{SECURITY_SCOPE}}" }]
+      }]
+    },
+    "issuetype": { "name": "Story" },
+    "priority": { "name": "Medium" },
+    "labels": ["story", "{{FEATURE_AREA_SLUG}}"],
+    "customfield_story_points": {{STORY_POINTS}}
+  }
+}
+```
+
+### User Story (Minimal)
 
 ```json
 {
@@ -107,7 +156,29 @@ AUTH_HEADER="Authorization: Basic $(echo -n ${JIRA_EMAIL}:${JIRA_API_TOKEN} | ba
 }
 ```
 
-### Technical Subtask
+### Parameterized Technical Subtask
+
+```json
+{
+  "fields": {
+    "project": { "key": "{{PROJECT_KEY}}" },
+    "summary": "[TECH] {{SUBTASK_TITLE}}",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [{
+        "type": "paragraph",
+        "content": [{ "type": "text", "text": "## Parent Story\n{{PARENT_STORY_KEY}}\n\n## Technical Details\n- Files to modify: {{AFFECTED_FILES}}\n- API changes: {{API_CHANGES}}\n- Database changes: {{DATABASE_CHANGES}}\n- Architecture pattern: {{ARCHITECTURE}}\n\n## Implementation Notes\n{{IMPLEMENTATION_NOTES}}\n\n## Definition of Done\n- [ ] Implementation complete\n- [ ] Unit tests added (coverage >= {{MIN_COVERAGE}})\n- [ ] Build passes: {{BUILD_COMMAND}}\n- [ ] Tests pass: {{TEST_COMMAND}}\n- [ ] Lint passes: {{LINT_COMMAND}}" }]
+      }]
+    },
+    "issuetype": { "name": "Sub-task" },
+    "parent": { "key": "{{PARENT_STORY_KEY}}" },
+    "labels": ["technical", "{{FEATURE_AREA_SLUG}}"]
+  }
+}
+```
+
+### Technical Subtask (Minimal)
 
 ```json
 {
@@ -128,7 +199,30 @@ AUTH_HEADER="Authorization: Basic $(echo -n ${JIRA_EMAIL}:${JIRA_API_TOKEN} | ba
 }
 ```
 
-### Bug Report
+### Parameterized Bug Report
+
+```json
+{
+  "fields": {
+    "project": { "key": "{{PROJECT_KEY}}" },
+    "summary": "[BUG] {{BUG_TITLE}}",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [{
+        "type": "paragraph",
+        "content": [{ "type": "text", "text": "## Steps to Reproduce\n{{REPRO_STEPS}}\n\n## Expected Behavior\n{{EXPECTED_BEHAVIOR}}\n\n## Actual Behavior\n{{ACTUAL_BEHAVIOR}}\n\n## Environment\n- Project: {{PROJECT_NAME}}\n- Stack: {{BACKEND_LANG}}/{{BACKEND_FRAMEWORK}}, {{FRONTEND_LANG}}/{{FRONTEND_FRAMEWORK}}\n- Detected by: {{TEST_TYPE}}\n\n## Evidence\n{{EVIDENCE}}\n\n## Related Story\n{{PARENT_STORY_KEY}}\n\n## Regression\n{{REGRESSION}}" }]
+      }]
+    },
+    "issuetype": { "name": "Bug" },
+    "priority": { "name": "{{BUG_PRIORITY}}" },
+    "labels": ["bug", "{{FEATURE_AREA_SLUG}}"],
+    "parent": { "key": "{{PARENT_STORY_KEY}}" }
+  }
+}
+```
+
+### Bug Report (Minimal)
 
 ```json
 {
@@ -146,6 +240,54 @@ AUTH_HEADER="Authorization: Basic $(echo -n ${JIRA_EMAIL}:${JIRA_API_TOKEN} | ba
     "issuetype": { "name": "Bug" },
     "priority": { "name": "High" },
     "labels": ["bug", "regression"]
+  }
+}
+```
+
+### Parameterized Security Ticket [CONDITIONAL]
+
+Use when a security issue is found during review.
+
+```json
+{
+  "fields": {
+    "project": { "key": "{{PROJECT_KEY}}" },
+    "summary": "[SECURITY] {{SECURITY_TITLE}}",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [{
+        "type": "paragraph",
+        "content": [{ "type": "text", "text": "## OWASP Category\n{{OWASP_CATEGORY}}\n\n## Severity\n{{SECURITY_SEVERITY}}\n\n## Description\n{{SECURITY_DESCRIPTION}}\n\n## Location\n{{AFFECTED_FILES}}\n\n## Impact\n{{SECURITY_IMPACT}}\n\n## Proposed Fix\n{{PROPOSED_FIX}}\n\n## Related Story\n{{PARENT_STORY_KEY}}" }]
+      }]
+    },
+    "issuetype": { "name": "{{SECURITY_ISSUE_TYPE}}" },
+    "priority": { "name": "{{SECURITY_PRIORITY}}" },
+    "labels": ["security", "owasp", "{{FEATURE_AREA_SLUG}}"]
+  }
+}
+```
+
+### Parameterized Compliance Ticket [CONDITIONAL]
+
+Use when a compliance gap is found during review.
+
+```json
+{
+  "fields": {
+    "project": { "key": "{{PROJECT_KEY}}" },
+    "summary": "[COMPLIANCE] {{COMPLIANCE_TITLE}}",
+    "description": {
+      "type": "doc",
+      "version": 1,
+      "content": [{
+        "type": "paragraph",
+        "content": [{ "type": "text", "text": "## Regulation\n{{COMPLIANCE_REGULATION}}\n\n## Requirement\n{{COMPLIANCE_REQUIREMENT}}\n\n## Gap Description\n{{GAP_DESCRIPTION}}\n\n## Location\n{{AFFECTED_FILES}}\n\n## Risk\n{{COMPLIANCE_RISK}}\n\n## Proposed Remediation\n{{PROPOSED_REMEDIATION}}\n\n## Related Story\n{{PARENT_STORY_KEY}}" }]
+      }]
+    },
+    "issuetype": { "name": "{{COMPLIANCE_ISSUE_TYPE}}" },
+    "priority": { "name": "{{COMPLIANCE_PRIORITY}}" },
+    "labels": ["compliance", "{{COMPLIANCE_REGULATION_SLUG}}", "{{FEATURE_AREA_SLUG}}"]
   }
 }
 ```
@@ -304,3 +446,103 @@ h3. Test Execution Report
 4. **Link related issues** — bugs to stories, subtasks to parents
 5. **Use proper Jira formatting** — ADF (Atlassian Document Format) for API v3
 6. **Handle errors gracefully** — if Jira API fails, log error and continue workflow
+
+---
+
+## Template Placeholder Reference
+
+In addition to the standard Argus placeholders, Jira templates use these specific placeholders:
+
+| Placeholder | Description | Example |
+|-------------|-------------|---------|
+| `{{FEATURE_AREA}}` | Name of the feature area or epic topic | "User Authentication" |
+| `{{FEATURE_AREA_SLUG}}` | Lowercase, hyphenated version for labels | "user-authentication" |
+| `{{USER_ROLE}}` | Role in the user story | "bank customer" |
+| `{{GOAL}}` | What the user wants | "reset my password" |
+| `{{BENEFIT}}` | Why the user wants it | "regain access to my account" |
+| `{{EPIC_KEY}}` | Jira key of the parent epic | "PROJ-100" |
+| `{{PARENT_STORY_KEY}}` | Jira key of the parent story | "PROJ-101" |
+| `{{PRECONDITION}}` | Gherkin precondition | "I am on the login page" |
+| `{{ACTION}}` | Gherkin action | "I click forgot password" |
+| `{{EXPECTED_RESULT}}` | Gherkin expected result | "I receive a reset email" |
+| `{{STORY_POINTS}}` | Fibonacci story points | "5" |
+| `{{AFFECTED_MODULES}}` | Modules affected by the story | "auth, email" |
+| `{{SECURITY_SCOPE}}` | Security considerations | "Touches password reset flow" |
+| `{{SUBTASK_TITLE}}` | Short title of the technical subtask | "Implement password reset service" |
+| `{{AFFECTED_FILES}}` | Files to modify | `src/auth/...` |
+| `{{API_CHANGES}}` | API changes needed | "POST /v1/auth/reset-password" |
+| `{{DATABASE_CHANGES}}` | Database changes needed | "Add token table" |
+| `{{IMPLEMENTATION_NOTES}}` | Implementation guidance | "Use bcrypt, TTL 15min" |
+| `{{BUG_TITLE}}` | Short bug description | "Login fails with valid credentials" |
+| `{{REPRO_STEPS}}` | Steps to reproduce | "1. Enter email..." |
+| `{{EXPECTED_BEHAVIOR}}` | Expected behavior | "User logs in" |
+| `{{ACTUAL_BEHAVIOR}}` | Actual behavior | "Error 500 returned" |
+| `{{TEST_TYPE}}` | Who/what found the bug | "Unit test", "Manual QA" |
+| `{{EVIDENCE}}` | Logs, screenshots, stack traces | "stack trace attached" |
+| `{{REGRESSION}}` | Whether it's a regression | "Yes, worked in v1.2" |
+| `{{BUG_PRIORITY}}` | Bug priority | "High" |
+| `{{SECURITY_TITLE}}` | Security issue title | "SQL injection in search endpoint" |
+| `{{OWASP_CATEGORY}}` | OWASP category | "A03: Injection" |
+| `{{SECURITY_SEVERITY}}` | Severity | "Critical" |
+| `{{SECURITY_DESCRIPTION}}` | Issue description | "User input concatenated into SQL" |
+| `{{SECURITY_IMPACT}}` | Impact | "Data exfiltration possible" |
+| `{{PROPOSED_FIX}}` | Suggested fix | "Use parameterized queries" |
+| `{{SECURITY_ISSUE_TYPE}}` | Jira issue type | "Bug" or "Security" |
+| `{{SECURITY_PRIORITY}}` | Priority | "Critical" |
+| `{{COMPLIANCE_TITLE}}` | Compliance gap title | "Missing data export endpoint" |
+| `{{COMPLIANCE_REGULATION}}` | Regulation name | "GDPR" |
+| `{{COMPLIANCE_REGULATION_SLUG}}` | Lowercase slug | "gdpr" |
+| `{{COMPLIANCE_REQUIREMENT}}` | Specific requirement | "Right to data portability" |
+| `{{GAP_DESCRIPTION}}` | What is missing | "No endpoint to export user data" |
+| `{{COMPLIANCE_RISK}}` | Risk of non-compliance | "Regulatory fine, user complaints" |
+| `{{PROPOSED_REMEDIATION}}` | How to fix | "Add /v1/user/export endpoint" |
+| `{{COMPLIANCE_ISSUE_TYPE}}` | Jira issue type | "Bug" or "Task" |
+| `{{COMPLIANCE_PRIORITY}}` | Priority | "High" |
+
+---
+
+## How to Use the Templates
+
+### Step 1: Choose the right template
+- New feature area → Epic
+- User-facing requirement → User Story
+- Technical implementation task → Technical Subtask
+- Test failure → Bug Report
+- Security finding → Security Ticket
+- Compliance gap → Compliance Ticket
+
+### Step 2: Replace placeholders
+Use values from the Argus installation questionnaire and the current task context.
+
+### Step 3: Create the issue
+Use the Jira MCP tool or REST API with the populated JSON.
+
+### Step 4: Link issues
+- Link stories to epics (parent relationship)
+- Link subtasks to stories (parent relationship)
+- Link bugs/security/compliance tickets to the related story
+
+### Example: Creating a User Story
+
+```bash
+# 1. Read the template
+# 2. Replace placeholders with actual values
+# 3. Save to story.json
+# 4. Create the issue
+
+curl -s -X POST \
+  -H "$AUTH_HEADER" \
+  -H "Content-Type: application/json" \
+  -d @story.json \
+  "${JIRA_URL}/issue"
+```
+
+---
+
+## Rules
+
+1. **Always use parameterized templates when possible** — they save time and ensure consistency
+2. **Replace all placeholders before creating the issue** — never submit raw templates
+3. **Link related issues** — maintain traceability across epics, stories, and bugs
+4. **Set correct priority** — security and compliance issues are typically High or Critical
+5. **Use slugs for labels** — lowercase and hyphenated (e.g., `user-authentication`)

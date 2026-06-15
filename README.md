@@ -14,7 +14,7 @@ Argus transforms any AI coding workspace (OpenCode, Cursor, Windsurf, Cline, Aid
 
 - Detects your workspace technology stack automatically
 - Asks 20 targeted configuration questions
-- Adapts 5 specialized agents and 12 skills to your project
+- Adapts 5 specialized agents and 11 core + 5 compliance skills to your project
 - Generates 6 documentation templates (architecture, security, API, etc.)
 - Enforces Agile SDLC with 7 compliance phases
 
@@ -64,24 +64,37 @@ Phase 7: Close (merge, documentation, memory)
 
 ---
 
-## The 12 Skills
+## The Skills
 
-Each skill is a specialized instruction set for a specific compliance domain:
+### 11 Core Skills
+
+Each skill is a specialized instruction set for a specific SDLC domain:
 
 | Skill | Domain | When to Use |
 |-------|--------|-------------|
 | `build-check` | CI/CD | Verify build pipeline before merge |
 | `code-review` | Quality | Structured multi-dimensional review |
-| `compliance-eu` | Regulation | GDPR, DORA, MiCA, PSD2, PCI-DSS |
-| `owasp-top10` | Security | OWASP Top 10 vulnerability scanning |
 | `git-flow` | Version Control | Branch naming, commits, PR workflow |
 | `history-scan` | Analysis | Git history for audit trails and changelog |
 | `jira-integration` | Project Management | Issue tracking across SDLC |
 | `lang-enforcer` | Standards | English-only enforcement |
-| `ui-ux` | Design | Design system, accessibility, responsive |
+| `owasp-top10` | Security | OWASP Top 10 vulnerability scanning |
 | `project-status` | Reporting | Board overview, WIP, blocker tracking |
 | `secure-coder` | Security | Secrets, injection, PII, CVE checks |
 | `test-driven` | Quality | TDD, AAA pattern, test coverage |
+| `ui-ux` | Design | Design system, accessibility, responsive |
+
+### 5 Compliance Skills (Install Only What Applies)
+
+| Skill | Regulation | Install If |
+|-------|------------|------------|
+| `gdpr` | General Data Protection Regulation | You process EU personal data |
+| `dora` | Digital Operational Resilience Act | You are a financial entity or ICT provider |
+| `mica` | Markets in Crypto-Assets Regulation | You handle crypto-assets |
+| `psd2` | Payment Services Directive 2 | You provide payment services |
+| `pci-dss` | Payment Card Industry Data Security Standard | You process cardholder data |
+
+The old `compliance-eu` skill is now a dispatcher for backward compatibility. New installations should copy only the compliance skills that apply to the project.
 
 ---
 
@@ -212,7 +225,7 @@ User: "Add 2FA to our login system"
     Loads: test-driven, build-check, secure-coder, owasp-top10
   ↳ Reviewer (4th Eye)
     Phase 6: Reviews OWASP Top 10, GDPR compliance, coding standards
-    Loads: owasp-top10, compliance-eu, secure-coder, code-review
+    Loads: owasp-top10, gdpr, dora, mica, psd2, pci-dss (as applicable), secure-coder, code-review
   ↳ Orchestrator
     Phase 7: Closes Jira issue, updates session memory
   ↳ User: "2FA implemented and reviewed. All 5 eyes passed."
