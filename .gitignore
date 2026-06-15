@@ -22,3 +22,20 @@ Thumbs.db
 
 # Reference docs (internal only)
 standard-docs/
+
+# AI agent generated directories
+# These directories contain session state, checkpoints, and temporary files
+# created by AI coding agents. They should NOT be committed.
+.omo/
+.sisyphus/
+.opencode/
+.codex/
+.claude/
+.cursor/
+.windsurf/
+.cline/
+.aider/
+
+# Argus installation checkpoints
+# These are generated during the agentic installation process
+.argus-installation/
