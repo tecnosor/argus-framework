@@ -20,6 +20,9 @@ Thumbs.db
 *.tmp
 *.temp
 
+# Reviewer Gate output
+reviewer-findings.txt
+
 # Reference docs (internal only)
 standard-docs/
 

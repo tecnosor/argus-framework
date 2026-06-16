@@ -8,6 +8,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- 
+
+### Changed
+- 
+
+### Deprecated
+- 
+
+### Removed
+- 
+
+### Fixed
+- 
+
+### Security
+- 
+
+## [0.2.0] - 2026-06-16
+
+### Added
+- **Reviewer Enforcement Gate**: new `.github/workflows/reviewer-gate.yml` that posts real PR reviews and creates blocking status checks.
+- `.github/scripts/reviewer-checks.sh` deterministic governance and git-hygiene checks for CI/CD.
+- GitLab `reviewer-gate` job in `.gitlab-ci.yml` for MR enforcement parity.
+- Reviewer agent now documents dual-mode operation: advisory (chat) and enforcement (CI/CD).
+- Reviewer agent permissions expanded to allow `gh pr review` and GitHub Checks API calls.
+- Orchestrator Phase 6 explicitly handles Reviewer verdicts and blocks merge on requested changes.
+- Documentation for the Reviewer Gate in `README.md` and `CONTRIBUTING.md`.
 - GitLab CI/CD pipeline (`.gitlab-ci.yml`) with governance, lint, and build stages.
 - GitLab issue templates for bug reports, feature requests, and security vulnerabilities.
 - GitLab merge request template with compliance and testing checklists.
@@ -17,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `VERSION` file for single-source-of-truth versioning.
 
 ### Changed
-- 
+- Reviewer agent description updated from "read-only — never modifies code" to "read-only for source code, but can post PR reviews and status checks".
 
 ### Deprecated
 - 
@@ -59,5 +86,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 - 
 
-[unreleased]: https://github.com/tecnosor/argus-framework/compare/v0.1.0...HEAD
+[unreleased]: https://github.com/tecnosor/argus-framework/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/tecnosor/argus-framework/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/tecnosor/argus-framework/releases/tag/v0.1.0

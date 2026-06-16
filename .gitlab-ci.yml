@@ -65,6 +65,16 @@ lint-commits:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
 
+reviewer-gate:
+  stage: validate
+  script:
+    - |
+      echo "Running Argus Reviewer Gate..."
+      bash ./.github/scripts/reviewer-checks.sh
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
+
 test:
   stage: test
   script:

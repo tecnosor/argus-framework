@@ -18,9 +18,14 @@ Thank you for your interest in contributing to Argus Framework!
 4. **Ensure your PR description** clearly describes the problem and solution. Include relevant issue numbers.
 5. **All PRs must be approved by the repository owner** (`@tecnosor`) before merging.
 6. **Ensure CI checks pass** before requesting review.
+7. **Ensure the Reviewer Gate passes.** The automated Reviewer Gate posts a PR
+   review and creates a status check. Blocking findings will request changes and
+   prevent merge until resolved.
 
 ### Review Process
 
+- The **Reviewer Gate** runs automatically on every PR and enforces governance,
+  git hygiene, and quality checks.
 - The repository owner (`@tecnosor`) is the sole approver for all changes.
 - Reviews are typically completed within 7 days.
 - Please be responsive to feedback and requested changes.
