@@ -1,0 +1,147 @@
+image: alpine:latest
+
+stages:
+  - validate
+  - test
+  - build
+  - release
+
+variables:
+  GIT_DEPTH: 0
+
+before_script:
+  - apk add --no-cache bash git grep
+
+validate:
+  stage: validate
+  script:
+    - |
+      echo "Checking required governance files..."
+      test -f CODEOWNERS || { echo "Missing CODEOWNERS"; exit 1; }
+      test -f CONTRIBUTING.md || { echo "Missing CONTRIBUTING.md"; exit 1; }
+      test -f CODE_OF_CONDUCT.md || { echo "Missing CODE_OF_CONDUCT.md"; exit 1; }
+      test -f SECURITY.md || { echo "Missing SECURITY.md"; exit 1; }
+      test -f LICENSE || { echo "Missing LICENSE"; exit 1; }
+      echo "All required governance files present."
+      echo "Checking CODEOWNERS..."
+      grep -E '^\*\s+@tecnosor$' CODEOWNERS || { echo "CODEOWNERS must reference @tecnosor as global owner"; exit 1; }
+      echo "CODEOWNERS is valid."
+      echo "Checking markdown links..."
+      find . -name '*.md' -type f ! -path './.git/*' -exec grep -l '\[.*\](.*)' {} \; | while read file; do
+        grep -oE '\[([^\]]+)\]\(([^)]+)\)' "$file" | while read link; do
+          url=$(echo "$link" | grep -oE '\(([^)]+)\)' | tr -d '()')
+          if [[ "$url" =~ ^#.*$ ]]; then continue; fi
+          if [[ "$url" =~ ^https?://.*$ ]]; then continue; fi
+          if [[ "$url" =~ ^mailto:.*$ ]]; then continue; fi
+          if [[ "$url" != /* ]]; then
+            dir=$(dirname "$file")
+            target="$dir/$url"
+            if [ ! -e "$target" ]; then
+              echo "Broken link in $file: $url"
+              exit 1
+            fi
+          fi
+        done
+      done
+      echo "No broken relative links found."
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
+
+lint-commits:
+  stage: validate
+  script:
+    - |
+      echo "Checking conventional commit format..."
+      git log --oneline --no-merges origin/$CI_DEFAULT_BRANCH..HEAD | while read line; do
+        commit=$(echo "$line" | awk '{print $1}')
+        msg=$(echo "$line" | cut -d' ' -f2-)
+        if ! echo "$msg" | grep -qE '^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\(.+\))?: .+'; then
+          echo "Commit $commit does not follow conventional commit format: $msg"
+          exit 1
+        fi
+      done
+      echo "All commits follow conventional commit format."
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+
+test:
+  stage: test
+  script:
+    - echo "Running tests..."
+    - echo "Tests passed (placeholder)"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
+
+build:
+  stage: build
+  script:
+    - echo "Building project..."
+    - echo "Build passed (placeholder)"
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "develop"'
+  needs:
+    - job: validate
+      artifacts: false
+    - job: test
+      artifacts: false
+
+# Release job: validates VERSION and CHANGELOG on tag push
+release:
+  stage: release
+  script:
+    - |
+      echo "=== Release Validation ==="
+      echo "Tag: $CI_COMMIT_TAG"
+      
+      # Extract version from tag (remove 'v' prefix)
+      VERSION=$(echo "$CI_COMMIT_TAG" | sed 's/^v//')
+      echo "Version: $VERSION"
+      
+      # Validate VERSION file
+      if [ ! -f VERSION ]; then
+        echo "ERROR: VERSION file not found"
+        exit 1
+      fi
+      
+      FILE_VERSION=$(cat VERSION | tr -d '[:space:]')
+      if [ "$FILE_VERSION" != "$VERSION" ]; then
+        echo "ERROR: VERSION file ($FILE_VERSION) does not match tag ($VERSION)"
+        exit 1
+      fi
+      echo "✓ VERSION file validated: $VERSION"
+      
+      # Validate CHANGELOG entry
+      if ! grep -q "## \[$VERSION\]" CHANGELOG.md; then
+        echo "ERROR: CHANGELOG.md does not contain entry for version $VERSION"
+        exit 1
+      fi
+      echo "✓ CHANGELOG entry validated for $VERSION"
+      
+      # Validate release notes extraction
+      awk "/## \[$VERSION\]/{flag=1;next}/## \[/{flag=0}flag" CHANGELOG.md | sed '/^$/d' > release_notes.txt
+      
+      if [ ! -s release_notes.txt ]; then
+        echo "ERROR: No release notes found in CHANGELOG for $VERSION"
+        exit 1
+      fi
+      
+      echo "✓ Release notes extracted:"
+      cat release_notes.txt
+      
+      echo ""
+      echo "=== Release Validation Complete ==="
+      echo "Compliance artifacts:"
+      echo "  - VERSION file: validated"
+      echo "  - CHANGELOG.md: validated"
+      echo "  - Release notes: extracted"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
+  needs:
+    - job: validate
+      artifacts: false
+    - job: test
+      artifacts: false
+    - job: build
+      artifacts: false

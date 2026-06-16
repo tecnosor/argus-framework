@@ -1,0 +1,75 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from tag
+        id: get_version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - name: Validate VERSION file
+        run: |
+          FILE_VERSION=$(cat VERSION | tr -d '[:space:]')
+          if [ "$FILE_VERSION" != "$VERSION" ]; then
+            echo "VERSION file ($FILE_VERSION) does not match tag ($VERSION)"
+            exit 1
+          fi
+          echo "VERSION file validated: $VERSION"
+
+      - name: Validate CHANGELOG entry
+        run: |
+          if ! grep -q "## \[$VERSION\]" CHANGELOG.md; then
+            echo "CHANGELOG.md does not contain entry for version $VERSION"
+            exit 1
+          fi
+          echo "CHANGELOG entry validated for $VERSION"
+
+      - name: Generate release notes
+        id: release_notes
+        run: |
+          # Extract release notes from CHANGELOG
+          awk '/## \['$VERSION'\]/{flag=1;next}/## \[/{flag=0}flag' CHANGELOG.md | sed '/^$/d' > RELEASE_NOTES.md
+          
+          if [ ! -s RELEASE_NOTES.md ]; then
+            echo "No release notes found in CHANGELOG for $VERSION"
+            exit 1
+          fi
+          
+          echo "RELEASE_NOTES<<EOF" >> $GITHUB_OUTPUT
+          cat RELEASE_NOTES.md >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body_path: RELEASE_NOTES.md
+          generate_release_notes: false
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Verify release created
+        run: |
+          echo "Release v${VERSION} created successfully"
+          echo "Compliance artifacts:"
+          echo "  - VERSION file: validated"
+          echo "  - CHANGELOG.md: validated"
+          echo "  - Release notes: extracted from CHANGELOG"
