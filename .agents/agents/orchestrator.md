@@ -151,16 +151,30 @@ After testing passes, invoke `@reviewer` with:
 - Compliance frameworks to check: `{{COMPLIANCE_FRAMEWORKS}}`
 - Full review checklist:
   - [ ] OWASP Top 10
-- [ ] GDPR compliance (load `gdpr` skill if applicable)
-- [ ] DORA compliance (load `dora` skill if applicable)
-- [ ] MiCA compliance (load `mica` skill if applicable)
-- [ ] PSD2 compliance (load `psd2` skill if applicable)
-- [ ] PCI-DSS compliance (load `pci-dss` skill if applicable)
-- [ ] Coding standards (backend + frontend + DB)
-- [ ] Test coverage meets minimum: `{{MIN_COVERAGE}}`
+  - [ ] GDPR compliance (load `gdpr` skill if applicable)
+  - [ ] DORA compliance (load `dora` skill if applicable)
+  - [ ] MiCA compliance (load `mica` skill if applicable)
+  - [ ] PSD2 compliance (load `psd2` skill if applicable)
+  - [ ] PCI-DSS compliance (load `pci-dss` skill if applicable)
+  - [ ] Coding standards (backend + frontend + DB)
+  - [ ] Test coverage meets minimum: `{{MIN_COVERAGE}}`
   - [ ] Git hygiene (branch naming, commit messages)
   - [ ] Naming conventions
   - [ ] Build integrity
+
+**Handle Reviewer Verdict**:
+
+- **If CHANGES REQUESTED**: Stop. Do not proceed to Phase 7. The Reviewer must
+  enforce the block by:
+  - Posting `gh pr review <number> --request-changes --body "<findings>"` when
+    `gh` is available
+  - Ensuring the `reviewer-gate` CI workflow is configured as a required status
+    check so the PR cannot be merged with blocking findings
+  - Keeping the issue in "In Progress" and re-delegating fixes to the builder
+
+- **If APPROVED or APPROVED WITH WARNINGS**: Proceed to Oracle verification.
+  The Reviewer should still post `gh pr review <number> --approve` when `gh`
+  is available so the PR shows an explicit AI approval.
 
 **Oracle Verification**: After reviewer passes, consult an Oracle agent (if available)
 to verify completeness:

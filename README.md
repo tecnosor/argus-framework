@@ -245,10 +245,46 @@ User: "Add 2FA to our login system"
   ↳ Reviewer (4th Eye)
     Phase 6: Reviews OWASP Top 10, GDPR compliance, coding standards
     Loads: owasp-top10, gdpr, dora, mica, psd2, pci-dss (as applicable), secure-coder, code-review
+    Enforcement: Posts PR review and status check; blocks merge on blocking findings
   ↳ Orchestrator
     Phase 7: Closes Jira issue, updates session memory
   ↳ User: "2FA implemented and reviewed. All 5 eyes passed."
 ```
+
+---
+
+## Reviewer Enforcement
+
+The Reviewer is read-only for source code, but it is **not powerless**. It enforces
+its findings through two mechanisms:
+
+### 1. Advisory Mode (OpenCode / Cursor / Windsurf / Cline / Aider)
+
+When invoked by the Orchestrator inside an AI coding agent, the Reviewer produces
+a structured Code Review Report. The Orchestrator uses the verdict to decide
+whether to proceed to merge or send the PR back for fixes.
+
+### 2. CI/CD Enforcement Mode (GitHub Actions / GitLab CI)
+
+The `Reviewer Gate` workflow runs automatically on every pull request:
+
+- Posts a real PR review — **Approve** or **Request changes** — via `gh pr review`
+- Creates an explicit check run via the GitHub Checks API
+- Fails the workflow job, producing a red status check that can block merge
+- Re-runs automatically on every push to the PR
+
+Configure the `Reviewer Gate` workflow as a **required status check** in your
+branch protection rules to guarantee that no PR with blocking findings can be
+merged.
+
+The deterministic checks live in `.github/scripts/reviewer-checks.sh` and cover:
+
+- Required governance files (`CODEOWNERS`, `CONTRIBUTING.md`, etc.)
+- Valid `CODEOWNERS` global owner
+- Conventional Commits format
+- Broken relative markdown links
+- WIP / fixup commits
+- Merge commits in feature branches
 
 ---
 

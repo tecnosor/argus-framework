@@ -1,0 +1,107 @@
+name: Reviewer Gate
+
+on:
+  pull_request:
+    branches: [main, develop]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  reviewer-gate:
+    name: AI Reviewer Enforcement Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run reviewer checks
+        id: reviewer
+        run: |
+          set +e
+          bash ./.github/scripts/reviewer-checks.sh
+          EXIT_CODE=$?
+          set -e
+          echo "exit_code=$EXIT_CODE" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare review body
+        id: body
+        run: |
+          if [ "${{ steps.reviewer.outputs.exit_code }}" == "0" ]; then
+            {
+              echo "REVIEW_BODY<<EOF"
+              echo "## ✅ Reviewer Gate: APPROVED"
+              echo ""
+              echo "All automated governance, security, and git-hygiene checks passed."
+              echo ""
+              echo "This approval is posted by the Argus Reviewer Gate workflow."
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          else
+            {
+              echo "REVIEW_BODY<<EOF"
+              echo "## ❌ Reviewer Gate: CHANGES REQUESTED"
+              echo ""
+              echo "The automated reviewer found blocking issues that must be resolved before merge."
+              echo ""
+              echo "### Findings"
+              sed 's/^/\n- /' reviewer-findings.txt || true
+              echo ""
+              echo "Please address all BLOCKING items and push updates. This gate will re-run automatically."
+              echo "EOF"
+            } >> "$GITHUB_ENV"
+          fi
+
+      - name: Post PR review
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "${{ steps.reviewer.outputs.exit_code }}" == "0" ]; then
+            gh pr review "$PR_NUMBER" --approve --body "$REVIEW_BODY"
+          else
+            gh pr review "$PR_NUMBER" --request-changes --body "$REVIEW_BODY"
+          fi
+
+      - name: Create check run
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if [ "${{ steps.reviewer.outputs.exit_code }}" == "0" ]; then
+            CONCLUSION="success"
+            TITLE="Reviewer Gate passed"
+          else
+            CONCLUSION="failure"
+            TITLE="Reviewer Gate failed"
+          fi
+
+          SUMMARY="Automated reviewer gate completed for PR #${{ github.event.pull_request.number }}."
+          TEXT="Findings:"
+          if [ -s reviewer-findings.txt ]; then
+            TEXT="${TEXT}$(printf '\n\n')$(cat reviewer-findings.txt)"
+          else
+            TEXT="${TEXT} No findings recorded."
+          fi
+
+          gh api repos/${{ github.repository }}/check-runs \
+            -f name="Reviewer Gate" \
+            -f head_sha="${{ github.event.pull_request.head.sha }}" \
+            -f status="completed" \
+            -f conclusion="$CONCLUSION" \
+            -f "output[title]=$TITLE" \
+            -f "output[summary]=$SUMMARY" \
+            -f "output[text]=$TEXT"
+
+      - name: Fail job on blocking findings
+        if: steps.reviewer.outputs.exit_code != '0'
+        run: exit 1
